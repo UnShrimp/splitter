@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- */
-
 package org.splitter;
 import java.io.*;
 import java.util.*;
@@ -61,8 +57,6 @@ public class Splitter {
                 if (!parsed.get("-p").isEmpty())
                 {
                     prefix = parsed.get("-p").getFirst();
-                } else {
-                    //System.err.println("Warning: no output file name prefix. Using empty.");
                 }
             }
             if (parsed.get("-o") != null)
@@ -70,8 +64,6 @@ public class Splitter {
                 if (!parsed.get("-o").isEmpty())
                 {
                     pathTo = parsed.get("-o").getFirst();
-                } else {
-                    //System.err.println("Warning: no output file path. Using this folder.");
                 }
             }
             if (parsed.get("-a") != null)
@@ -145,28 +137,8 @@ public class Splitter {
             for (int i = 0; i < 3; i++)
             {
                 if (!data.get(i).isEmpty()) {
-                    /*double fSumVal = 0;
-                    double fMinVal = 0;
-                    double fMaxVal = 0;
-                    long iSumVal = 0;
-                    long iMinVal = 0;
-                    long iMaxVal = 0;*/
-                    
-//                    TypeStatistics<long> integerStat = new TypeStatistics();
-//                    TypeStatistics<double> floatStat = new TypeStatistics();
-//                    TypeStatistics<long> stringStat = new TypeStatistics();
-                    
-                    
-//                    TypeStatistics integerStat = new TypeStatistics();
-//                    integerStat.add("df".length());
-//                    TypeStatistics floatStat = new TypeStatistics();
-//                    TypeStatistics stringStat = new TypeStatistics();
-
-
                     TypeStatistics tStat = new TypeStatistics();
                     
-                    //outputPath.resolve(pathTo);
-                    //FileWriter writer = new FileWriter(pathTo + prefix + OUTPUT_FILE_NAME[i] + dotTXT, appendFile);
                     File outputFile = outputPath.resolve(prefix + OUTPUT_FILE_NAME[i] + dotTXT).toFile();
                     FileWriter writer;
                     try {
@@ -183,30 +155,10 @@ public class Splitter {
                         if (statistics == 2)
                         {
                             switch(i) {
-                                //case 0: integerStat.add(Integer.parseInt(data.get(i).get(j))); break;
-                                //case 1: floatStat.add(Float.parseFloat(data.get(i).get(j)));break;
-//                                case 0: integerStat.add(Long.parseLong(data.get(i).get(j))); break;
-//                                case 1: floatStat.add(Double.parseDouble(data.get(i).get(j)));break;
-//                                case 2: stringStat.add(data.get(i).get(j).length());break;
                                 case 0: tStat.add(Long.parseLong(data.get(i).get(j))); break;
                                 case 1: tStat.add(Double.parseDouble(data.get(i).get(j)));break;
                                 case 2: tStat.add(data.get(i).get(j).length());break;
                             }
-                            
-                            /*float jVal;
-                            if (i != 2) {
-                                jVal = Float.parseFloat(data.get(i).get(j));
-                                sumVal += jVal;
-                            } else {
-                                jVal  = data.get(i).get(j).length();
-                            }
-                            if (j == 0) {
-                                minVal = jVal;
-                                maxVal = jVal;
-                            } else {
-                                minVal = Math.min(minVal, jVal);
-                                maxVal = Math.max(maxVal, jVal);
-                            }*/
                         }
                     }
                     if (statistics != 0) {
@@ -219,27 +171,6 @@ public class Splitter {
                             System.out.println(statNames[i]+ tStat.getMin());
                             System.out.println(statNames[i+3]+ tStat.getMax());
                             System.out.println();
-                            
-                            /*switch(i) {
-                                case 0: 
-                                    System.out.println("Sum: "+ (long)sumVal);
-                                    System.out.println("Average: "+ (double)sumVal/data.get(i).size());
-                                    System.out.println("Min: "+ (int)minVal);
-                                    System.out.println("Max: "+ (int)maxVal);
-                                    break;
-                                case 1: 
-                                    System.out.println("Sum: "+ sumVal);
-                                    System.out.println("Average: "+ sumVal/data.get(i).size());
-                                    System.out.println("Min: "+ minVal);
-                                    System.out.println("Max: "+ maxVal);
-                                    System.out.println();
-                                    break;
-                                case 2: 
-                                    System.out.println("Shortest: "+ (int)minVal);
-                                    System.out.println("Longest: "+ (int)maxVal);
-                                    System.out.println();
-                                    break;
-                            }*/
                         }
                     }
                     bufferedWriter.close(); 
