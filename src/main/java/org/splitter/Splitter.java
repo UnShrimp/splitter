@@ -7,6 +7,12 @@ import org.splitter.TypeStatistics;
 
 public class Splitter {
     
+    public enum StatisticsType {
+        NONE,
+        SHORT,
+        FULL;
+    }
+    
     public enum ClassLine {
         NONE (-1),
         INTEGER (0),
@@ -16,7 +22,6 @@ public class Splitter {
         private ClassLine(int label) {
             this.label = label;
         }
-        
     }
     
     public static ClassLine typeLine(String string) {
@@ -37,7 +42,7 @@ public class Splitter {
     public static void main(String[] args) {
         try {
             boolean appendFile = false;
-            int statistics = 0;
+            StatisticsType statType = StatisticsType.NONE;
             String prefix = "";
             String pathTo = "";
             List<String> INPUT_FILE_NAME = new LinkedList<String>();
@@ -45,8 +50,6 @@ public class Splitter {
             String[] statNames = {"Minimum integer value: ","Minimum float value: ",
                     "Shortest string length:","Maximum integer value: ","Maximum float value: ","Longest string length:"};
             String dotTXT = ".txt";
-            int statShort = 0;
-            int statFull = 0;
             
             ArgParser parsed = new ArgParser(args);
             parsed.addKey("-p", true);
@@ -75,11 +78,14 @@ public class Splitter {
             }
             if (parsed.get("-s") != null)
             {
-                statShort = 1;
+                statType = StatisticsType.SHORT;
             }
             if (parsed.get("-f") != null)
             {
-                statFull = 1;
+                if (statType == StatisticsType.SHORT) {
+                    System.err.println("Warning: -f overrides -s.");
+                }
+                statType = StatisticsType.FULL;
             }
             for (String i : parsed.get("")) {
                 Path inputFile = Paths.get(i);
@@ -106,15 +112,6 @@ public class Splitter {
             } catch (Exception e) {
                 System.err.println("Warning: can't create path with name: "+pathTo+". Using default one.");
                 outputPath = Paths.get("");
-            }
-                                   
-            if (statFull !=0) {
-                statistics = 2;
-                if (statShort != 0) {
-                    System.err.println("Warning: -f overrides -s.");
-                }
-            } else if (statShort != 0) {
-                statistics = 1;
             }
             
             String line;
@@ -156,7 +153,7 @@ public class Splitter {
                     for (int j = 0; j < data.get(cl.label).size(); j++) {
                         bufferedWriter.write(data.get(cl.label).get(j));
                         bufferedWriter.newLine();
-                        if (statistics == 2)
+                        if (statType == StatisticsType.FULL)
                         {
                             switch(cl) {
                                 case INTEGER: tStat.add(Long.parseLong(data.get(cl.label).get(j))); break;
@@ -165,9 +162,9 @@ public class Splitter {
                             }
                         }
                     }
-                    if (statistics != 0) {
+                    if (statType != StatisticsType.NONE) {
                         System.out.println("Number of "+OUTPUT_FILE_NAME[cl.label]+" is: "+data.get(cl.label).size());
-                        if (statistics == 2) {
+                        if (statType == StatisticsType.FULL) {
                             if (cl != ClassLine.STRING) {
                                  System.out.println("Sum: "+ tStat.getSum());
                                  System.out.println("Average: "+ tStat.getSum().doubleValue()/data.get(cl.label).size());
