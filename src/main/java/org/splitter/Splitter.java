@@ -7,29 +7,32 @@ import org.splitter.TypeStatistics;
 
 public class Splitter {
     
-    public static int typeLine(String string) {
-        int intValue = 2;
+    public enum ClassLine {
+        NONE (-1),
+        INTEGER (0),
+        FLOAT (1),
+        STRING (2);
+        public final int label;
+        private ClassLine(int label) {
+            this.label = label;
+        }
         
+    }
+    
+    public static ClassLine typeLine(String string) {
         if(string == null || string.equals("")){
-            intValue = -1;
-            return intValue;
+            return ClassLine.NONE;
         }
         try {
             Long.parseLong(string);
-            intValue = 0;
-            return intValue;
-        } catch(NumberFormatException  e){
-            
-        }
+            return ClassLine.INTEGER;
+        } catch(NumberFormatException  e){}
         
         try {
             Double.parseDouble(string);
-            intValue = 1;
-            return intValue;
-        } catch(NumberFormatException  e){
-            
-        }
-        return intValue;
+            return ClassLine.FLOAT;
+        } catch(NumberFormatException  e){}
+        return ClassLine.STRING;
     }
     public static void main(String[] args) {
         try {
@@ -126,50 +129,51 @@ public class Splitter {
                 BufferedReader bufferedReader = new BufferedReader(reader);
                 
                 while((line = bufferedReader.readLine()) != null){
-                    int typeOf = typeLine(line); 
-                    if (typeOf != -1) {
-                       data.get(typeOf).add(line);
+                    ClassLine typeOf = typeLine(line); 
+                    if (typeOf != ClassLine.NONE) {
+                       data.get(typeOf.label).add(line);
                     }
                 }
                 reader.close();
             }
             
-            for (int i = 0; i < 3; i++)
+            //for (int i = 0; i < 3; i++)
+            for (ClassLine cl : Arrays.asList(ClassLine.INTEGER, ClassLine.FLOAT, ClassLine.STRING))    
             {
-                if (!data.get(i).isEmpty()) {
+                if (!data.get(cl.label).isEmpty()) {
                     TypeStatistics tStat = new TypeStatistics();
                     
-                    File outputFile = outputPath.resolve(prefix + OUTPUT_FILE_NAME[i] + dotTXT).toFile();
+                    File outputFile = outputPath.resolve(prefix + OUTPUT_FILE_NAME[cl.label] + dotTXT).toFile();
                     FileWriter writer;
                     try {
                         writer = new FileWriter(outputFile, appendFile);
                     } catch (FileNotFoundException e){
                         System.err.println("Warning: can't create file with name: "+outputFile.toString()+". Using default one.");
-                        writer = new FileWriter(OUTPUT_FILE_NAME[i] + dotTXT, appendFile);
+                        writer = new FileWriter(OUTPUT_FILE_NAME[cl.label] + dotTXT, appendFile);
                     }
                     BufferedWriter bufferedWriter = new BufferedWriter(writer);
                     
-                    for (int j = 0; j < data.get(i).size(); j++) {
-                        bufferedWriter.write(data.get(i).get(j));
+                    for (int j = 0; j < data.get(cl.label).size(); j++) {
+                        bufferedWriter.write(data.get(cl.label).get(j));
                         bufferedWriter.newLine();
                         if (statistics == 2)
                         {
-                            switch(i) {
-                                case 0: tStat.add(Long.parseLong(data.get(i).get(j))); break;
-                                case 1: tStat.add(Double.parseDouble(data.get(i).get(j)));break;
-                                case 2: tStat.add(data.get(i).get(j).length());break;
+                            switch(cl) {
+                                case INTEGER: tStat.add(Long.parseLong(data.get(cl.label).get(j))); break;
+                                case FLOAT: tStat.add(Double.parseDouble(data.get(cl.label).get(j)));break;
+                                case STRING: tStat.add(data.get(cl.label).get(j).length());break;
                             }
                         }
                     }
                     if (statistics != 0) {
-                        System.out.println("Number of "+OUTPUT_FILE_NAME[i]+" is: "+data.get(i).size());
+                        System.out.println("Number of "+OUTPUT_FILE_NAME[cl.label]+" is: "+data.get(cl.label).size());
                         if (statistics == 2) {
-                            if (i != 2) {
+                            if (cl != ClassLine.STRING) {
                                  System.out.println("Sum: "+ tStat.getSum());
-                                 System.out.println("Average: "+ tStat.getSum().doubleValue()/data.get(i).size());
+                                 System.out.println("Average: "+ tStat.getSum().doubleValue()/data.get(cl.label).size());
                             }
-                            System.out.println(statNames[i]+ tStat.getMin());
-                            System.out.println(statNames[i+3]+ tStat.getMax());
+                            System.out.println(statNames[cl.label]+ tStat.getMin());
+                            System.out.println(statNames[cl.label+3]+ tStat.getMax());
                             System.out.println();
                         }
                     }
