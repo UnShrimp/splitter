@@ -134,7 +134,6 @@ public class Splitter {
                 reader.close();
             }
             
-            //for (int i = 0; i < 3; i++)
             for (ClassLine cl : Arrays.asList(ClassLine.INTEGER, ClassLine.FLOAT, ClassLine.STRING))    
             {
                 if (!data.get(cl.label).isEmpty()) {
